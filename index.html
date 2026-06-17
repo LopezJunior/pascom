@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <>PASCOM - Partitleóquia Santo Antônio</>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="navbar container-fluid">
+      <div class="logo">
+        <img
+          src="https://drive.google.com/thumbnail?id=1PPT1NgwXRrlOUMFVy7QnPXjSSmwg3-qY&sz=w200"
+          alt="Logo Pascom"
+          class="logo-img"
+        />
+
+        <div class="logo-text-container">
+          <span class="logo-title">Pascom</span>
+          <span class="logo-subtitle"
+            >PARÓQUIA SANTO ANTÔNIO<br />IMBITUVA-PR</span
+          >
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#" class="active">Início</a>
+        <a href="#albuns">Álbuns</a>
+        <!-- <a href="#">Galeria</a> -->
+        <a href="#">Sobre nós</a>
+        <a href="#footer">Contato</a>
+      </nav>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </header>
+
+    <section class="hero container">
+      <div class="hero-text">
+        <span class="tag">PASCOM SANTO ANTÔNIO</span>
+        <h1>Registrando a vida da nossa comunidade</h1>
+        <p>
+          Fotos que contam histórias de fé, amor e união em nossa caminhada.
+        </p>
+        <a href="#albuns" class="btn-primary"
+          ><i class="fa-solid fa-camera"></i> VER ÁLBUNS</a
+        >
+      </div>
+      <div class="hero-image">
+        <img
+          src="https://drive.google.com/thumbnail?id=11KVMKaAhchHg3qPsc-EpAtesloRrb4-9&sz=w1200"
+          alt="Igreja Matriz Santo Antônio"
+        />
+      </div>
+    </section>
+
+    <div class="stats-bar container">
+      <div class="stat-item">
+        <i class="fa-regular fa-image"></i>
+        <div>
+          <strong>+1.200</strong>
+          <span>fotos registradas</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <i class="fa-regular fa-folder"></i>
+        <div>
+          <strong>+40</strong>
+          <span>álbuns publicados</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <i class="fa-solid fa-users"></i>
+        <div>
+          <strong>Nossas histórias</strong>
+          <span>em imagens</span>
+        </div>
+      </div>
+    </div>
+
+    <section id="albuns" class="container albuns-section">
+      <div class="albuns-header">
+        <div>
+          <span class="tag">NOSSOS ÁLBUNS</span>
+          <h2 id="titulo-sessao">Momentos que ficaram para sempre</h2>
+        </div>
+        <button
+          id="btn-voltar"
+          class="btn-outline"
+          style="display: none"
+          onclick="voltarParaAlbuns()"
+        >
+          <i class="fa-solid fa-arrow-left"></i> VOLTAR PARA ÁLBUNS
+        </button>
+      </div>
+
+      <div class="grid-albuns" id="lista-albuns">
+        <p
+          style="
+            text-align: center;
+            width: 100%;
+            grid-column: 1 / -1;
+            padding: 40px 0;
+            color: #777;
+          "
+        >
+          <i class="fa-solid fa-spinner fa-spin"></i> Carregando álbuns da
+          Pascom...
+        </p>
+      </div>
+
+      <div
+        class="grid-fotos-internas"
+        id="galeria-fotos"
+        style="display: none"
+      ></div>
+    </section>
+
+    <!-- <section class="container">
+      <div class="cta-banner">
+        <div class="cta-text">
+          <div class="cta-icon"><i class="fa-solid fa-camera"></i></div>
+          <div>
+            <h3>Tem fotos para compartilhar?</h3>
+            <p>Envie suas fotos e ajude a contar nossa história.</p>
+          </div>
+        </div>
+        <a href="#" class="btn-white"
+          ><i class="fa-solid fa-cloud-arrow-up"></i> ENVIAR FOTOS</a
+        >
+      </div>
+    </section> -->
+
+    <footer>
+      <div id="footer" class="container footer-content">
+        <div class="footer-logo">
+          <div class="logo">
+            <img
+              src="https://drive.google.com/thumbnail?id=1PPT1NgwXRrlOUMFVy7QnPXjSSmwg3-qY&sz=w200"
+              alt="Logo Pascom"
+              class="logo-img"
+            />
+
+            <div class="logo-text-container">
+              <span class="logo-title">Pascom</span>
+              <span class="logo-subtitle"
+                >PARÓQUIA SANTO ANTÔNIO<br />IMBITUVA-PR</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>NAVEGAÇÃO</h4>
+          <a href="#">Início</a>
+          <a href="#albuns">Álbuns</a>
+          <a href="#">Contato</a>
+        </div>
+        <div class="footer-links">
+          <h4>SIGA-NOS</h4>
+          <a href="https://www.instagram.com/paroquiaimbituva/"
+            ><i class="fa-brands fa-instagram"></i> Instagram</a
+          >
+          <a
+            href="https://www.facebook.com/paroquiaSantoAntonioImbituva?locale=pt_BR"
+            ><i class="fa-brands fa-facebook"></i> Facebook</a
+          >
+        </div>
+        <div class="footer-contact">
+          <h4>CONTATO</h4>
+          <p><i class="fa-solid fa-envelope"></i> pascomimbituva@gmail.com</p>
+          <p><i class="fa-solid fa-location-dot"></i> Imbituva - PR</p>
+        </div>
+      </div>
+      <div class="footer-bottom container">
+        <p>
+          &copy; 2026 PASCOM Paróquia Santo Antônio. Todos os direitos
+          reservados.
+        </p>
+      </div>
+    </footer>
+    <!-- LIGHTBOX (Visualizador de Fotos em Tela Cheia) -->
+    <!-- LIGHTBOX (Visualizador de Fotos em Tela Cheia) -->
+    <div id="lightbox" class="lightbox" style="display: none">
+      <!-- NOVO: Botão de Baixar -->
+      <a id="btn-download" href="#" target="_blank" class="btn-download">
+        <i class="fa-solid fa-download"></i>
+        <span class="txt-download">Baixar</span>
+      </a>
+
+      <span class="fechar-lightbox" onclick="fecharLightbox()"
+        ><i class="fa-solid fa-xmark"></i
+      ></span>
+      <button class="btn-nav btn-prev" onclick="mudarFoto(-1)">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <img id="lightbox-img" src="" alt="Foto Ampliada" />
+      <button class="btn-nav btn-next" onclick="mudarFoto(1)">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
