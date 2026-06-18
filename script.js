@@ -1,6 +1,6 @@
 // URL da API conectada com o Google Drive da Pascom
 const urlApiGoogle =
-  "https://script.google.com/macros/s/AKfycby5B-NSrFgTzNvig5MNonX96q2fnW38uuFACjmlY56q5Emvb4I4O_4ZnEBjNlyXDDs/exec";
+  "https://script.google.com/macros/s/AKfycbwhTgBFYK7fLfACwa_8pr_0eLB5mZBt84ZvSy7fEriAwwcfm9URZUmjvSvjxXnON5Lu/exec";
 
 let dadosDosAlbuns = [];
 let fotosDoAlbumAtual = [];
