@@ -165,5 +165,41 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
+/* ==========================================================================
+   NAVEGAÇÃO POR TOQUE (SWIPE PARA CELULARES)
+   ========================================================================== */
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+const lightboxElement = document.getElementById('lightbox');
+
+// Registra onde o dedo encostou na tela
+lightboxElement.addEventListener('touchstart', function(event) {
+    touchStartX = event.changedTouches[0].screenX;
+}, false);
+
+// Registra onde o dedo soltou da tela e chama a função para calcular a direção
+lightboxElement.addEventListener('touchend', function(event) {
+    touchEndX = event.changedTouches[0].screenX;
+    lidarComSwipe();
+}, false);
+
+function lidarComSwipe() {
+    // Define uma distância mínima (em pixels) para considerar como um "arrasto" intencional
+    // Isso evita que um simples toque na tela avance a foto sem querer
+    const distanciaMinima = 50; 
+    
+    // Se o dedo foi para a esquerda (arrastou para a esquerda)
+    if (touchEndX < touchStartX - distanciaMinima) {
+        mudarFoto(1); // Vai para a próxima foto
+    }
+    
+    // Se o dedo foi para a direita (arrastou para a direita)
+    if (touchEndX > touchStartX + distanciaMinima) {
+        mudarFoto(-1); // Volta para a foto anterior
+    }
+}
+
 // Dá a partida no site assim que o código carrega
 iniciarSite();
