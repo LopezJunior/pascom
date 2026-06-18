@@ -90,8 +90,26 @@ function voltarParaAlbuns() {
 }
 
 /* ==========================================================================
-   FUNÇÕES DO LIGHTBOX (TELA CHEIA COM BOTÃO DE DOWNLOAD)
+   FUNÇÕES DO LIGHTBOX (TELA CHEIA COM PRÉ-CARREGAMENTO)
    ========================================================================== */
+
+// NOVO: Função para baixar as fotos vizinhas em segundo plano
+function precarregarImagensVizinhas(indexAtual) {
+  // Descobre qual é a próxima foto e a anterior (com a lógica de loop infinito)
+  let indexProxima =
+    indexAtual + 1 >= fotosDoAlbumAtual.length ? 0 : indexAtual + 1;
+  let indexAnterior =
+    indexAtual - 1 < 0 ? fotosDoAlbumAtual.length - 1 : indexAtual - 1;
+
+  // Cria elementos de imagem na memória do navegador para forçar o download invisível
+  const imgProxima = new Image();
+  const idProxima = fotosDoAlbumAtual[indexProxima].id;
+  imgProxima.src = `https://drive.google.com/thumbnail?id=${idProxima}&sz=w1600`;
+
+  const imgAnterior = new Image();
+  const idAnterior = fotosDoAlbumAtual[indexAnterior].id;
+  imgAnterior.src = `https://drive.google.com/thumbnail?id=${idAnterior}&sz=w1600`;
+}
 
 function abrirLightbox(index) {
   indiceFotoAtual = index;
@@ -101,10 +119,14 @@ function abrirLightbox(index) {
 
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
 
+  // Exibe a foto atual
   lightboxImg.src = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
   btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
 
   lightbox.style.display = "flex";
+
+  // Dispara o download antecipado das vizinhas
+  precarregarImagensVizinhas(indiceFotoAtual);
 }
 
 function fecharLightbox() {
@@ -128,6 +150,9 @@ function mudarFoto(direcao) {
   document.getElementById("lightbox-img").src =
     `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
   btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
+
+  // Atualiza o pré-carregamento para as novas vizinhas
+  precarregarImagensVizinhas(indiceFotoAtual);
 }
 
 // Navegação pelo teclado (Setas e Esc)
