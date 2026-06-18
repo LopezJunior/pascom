@@ -34,7 +34,7 @@
         <a href="#" class="active">Início</a>
         <a href="#albuns">Álbuns</a>
         <!-- <a href="#">Galeria</a> -->
-        <a href="#">Sobre nós</a>
+        <a href="#" onclick="abrirModalSobre(event)">Sobre nós</a>
         <a href="#footer">Contato</a>
       </nav>
       <div class="social-icons">
@@ -206,6 +206,44 @@
       <button class="btn-nav btn-next" onclick="mudarFoto(1)">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
+    </div>
+    <!-- MODAL SOBRE NÓS -->
+    <div id="modal-sobre" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <span class="fechar-modal" onclick="fecharModalSobre()"
+          ><i class="fa-solid fa-xmark"></i
+        ></span>
+
+        <h2>Sobre a PASCOM</h2>
+
+        <div class="modal-body">
+          <img
+            src="https://drive.google.com/thumbnail?id=1CBkBHre_RpftNJ6OwX36d3a0fjgI6dcM&sz=w800"
+            alt="Coordenação Pascom"
+            class="img-sobre"
+          />
+
+          <div class="modal-texto">
+            <p>
+              A Pastoral da Comunicação (PASCOM) da Paróquia Santo Antônio
+              nasceu com a missão de ser a ponte entre a Igreja e a comunidade.
+            </p>
+
+            <p>
+              Nosso trabalho vai muito além de tirar fotos. Atuamos em parceria
+              nos bastidores coordenando projetos de mídia, cobrindo eventos e
+              garantindo que a mensagem de Cristo chegue a todos os lares
+              através da tecnologia e da criatividade.
+            </p>
+
+            <p>
+              Se você tem afinidade com fotografia, vídeo, redes sociais ou
+              design, venha fazer parte da nossa equipe e ajude a registrar a
+              história da nossa paróquia!
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="script.js"></script>
   </body>

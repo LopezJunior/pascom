@@ -172,34 +172,65 @@ document.addEventListener("keydown", function (event) {
 let touchStartX = 0;
 let touchEndX = 0;
 
-const lightboxElement = document.getElementById('lightbox');
+const lightboxElement = document.getElementById("lightbox");
 
 // Registra onde o dedo encostou na tela
-lightboxElement.addEventListener('touchstart', function(event) {
+lightboxElement.addEventListener(
+  "touchstart",
+  function (event) {
     touchStartX = event.changedTouches[0].screenX;
-}, false);
+  },
+  false,
+);
 
 // Registra onde o dedo soltou da tela e chama a função para calcular a direção
-lightboxElement.addEventListener('touchend', function(event) {
+lightboxElement.addEventListener(
+  "touchend",
+  function (event) {
     touchEndX = event.changedTouches[0].screenX;
     lidarComSwipe();
-}, false);
+  },
+  false,
+);
 
 function lidarComSwipe() {
-    // Define uma distância mínima (em pixels) para considerar como um "arrasto" intencional
-    // Isso evita que um simples toque na tela avance a foto sem querer
-    const distanciaMinima = 50; 
-    
-    // Se o dedo foi para a esquerda (arrastou para a esquerda)
-    if (touchEndX < touchStartX - distanciaMinima) {
-        mudarFoto(1); // Vai para a próxima foto
-    }
-    
-    // Se o dedo foi para a direita (arrastou para a direita)
-    if (touchEndX > touchStartX + distanciaMinima) {
-        mudarFoto(-1); // Volta para a foto anterior
-    }
+  // Define uma distância mínima (em pixels) para considerar como um "arrasto" intencional
+  // Isso evita que um simples toque na tela avance a foto sem querer
+  const distanciaMinima = 50;
+
+  // Se o dedo foi para a esquerda (arrastou para a esquerda)
+  if (touchEndX < touchStartX - distanciaMinima) {
+    mudarFoto(1); // Vai para a próxima foto
+  }
+
+  // Se o dedo foi para a direita (arrastou para a direita)
+  if (touchEndX > touchStartX + distanciaMinima) {
+    mudarFoto(-1); // Volta para a foto anterior
+  }
 }
+
+/* ==========================================================================
+   MODAL SOBRE NÓS
+   ========================================================================== */
+
+function abrirModalSobre(event) {
+  // Evita que a página pule pro topo ao clicar no link com href="#"
+  event.preventDefault();
+  document.getElementById("modal-sobre").style.display = "flex";
+}
+
+function fecharModalSobre() {
+  document.getElementById("modal-sobre").style.display = "none";
+}
+
+// Fecha o modal se o usuário clicar na área escura (fora da caixa branca)
+document
+  .getElementById("modal-sobre")
+  .addEventListener("click", function (event) {
+    if (event.target === this) {
+      fecharModalSobre();
+    }
+  });
 
 // Dá a partida no site assim que o código carrega
 iniciarSite();
