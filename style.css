@@ -16,6 +16,14 @@
   font-family: "Inter", sans-serif;
 }
 
+.stat-container {
+  display: flex;
+  justify-content: space-around; /* Espalha os 3 itens igualmente na horizontal */
+  align-items: center;
+  flex-wrap: wrap; /* Permite que os itens se ajustem em telas menores */
+  width: 100%;
+}
+
 body {
   background-color: var(--bg-light);
   color: var(--text-dark);
@@ -23,8 +31,12 @@ body {
 
 .container {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 20px;
+  /* display: flex; */
+  /* justify-content: center; */
+  /* align-items: center; */
 }
 
 .container-fluid {
@@ -188,6 +200,9 @@ body {
 .stats-bar {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  /* width: 1000px; */
+  /* align-items: center; */
   background: var(--white);
   padding: 30px;
   border-radius: 15px;
@@ -201,6 +216,7 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
+  margin: 0px 50px 0px;
 }
 
 .stat-item i {
@@ -732,5 +748,64 @@ footer {
   }
   .txt-download {
     display: none; /* Esconde a palavra "Baixar" em telas pequenas */
+  }
+
+  /* ==========================================================================
+   BARRA DE ESTATÍSTICAS
+   ========================================================================== */
+  .estatisticas {
+    background-color: #ffffff;
+    /* display: flex; */
+    padding: 60px 0;
+    border-top: 1px solid #eaeaea; /* Uma linha sutil para separar as seções */
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .stat-container {
+    display: flex;
+    justify-content: space-around; /* Espalha os 3 itens igualmente na horizontal */
+    align-items: center;
+    flex-wrap: wrap; /* Permite que os itens se ajustem em telas menores */
+    width: 100%;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column; /* Coloca o ícone em cima, número no meio e texto embaixo */
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    flex: 1; /* Faz todos ocuparem o mesmo espaço */
+    min-width: 250px; /* Garante que não fiquem espremidos */
+  }
+
+  .stat-item i {
+    font-size: 3rem;
+    color: #fbd341; /* Aquele amarelo bonito da Pascom/Igreja */
+    margin-bottom: 15px;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+  }
+
+  .stat-item p {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 5px;
+    text-transform: uppercase; /* Deixa o texto em MAIÚSCULAS para ficar elegante */
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  /* Ajuste para a tela do celular (onde eles devem ficar empilhados para não espremer) */
+  @media (max-width: 768px) {
+    .stat-container {
+      flex-direction: column;
+      gap: 30px;
+    }
   }
 }

@@ -27,8 +27,9 @@ async function iniciarSite() {
       const idFotoCapa = album.fotos[0].id;
       const urlCapa = `https://drive.google.com/thumbnail?id=${idFotoCapa}&sz=w600`;
 
+      // Novo código do card com a animação
       const cardHTML = `
-                <div class="card-album">
+                <div class="card-album" data-aos="fade-up" data-aos-delay="${index * 100}">
                     <div class="card-img-wrapper">
                         <span class="badge-fotos"><i class="fa-regular fa-image"></i> ${album.fotos.length}</span>
                         <img src="${urlCapa}" alt="Capa do álbum ${album.titulo}">
@@ -40,7 +41,6 @@ async function iniciarSite() {
                     </div>
                 </div>
             `;
-
       containerLista.innerHTML += cardHTML;
     });
   } catch (erro) {
@@ -231,6 +231,69 @@ document
       fecharModalSobre();
     }
   });
+
+// Inicializa a biblioteca de animações
+AOS.init({
+  duration: 800, // Duração da animação (0.8 segundos)
+  once: true, // Anima apenas uma vez quando a pessoa rola a página
+  offset: 100, // Distância que o elemento precisa aparecer na tela para animar
+});
+
+// Atualiza as animações depois que as fotos carregam do Google Drive
+setTimeout(() => {
+  AOS.refresh();
+}, 2000);
+
+/* ==========================================================================
+   ANIMAÇÃO DO CONTADOR DE ESTATÍSTICAS
+   ========================================================================== */
+
+function animarContadores() {
+  const contadores = document.querySelectorAll(".contador");
+  const velocidade = 100; // Quanto menor esse número, mais rápido os números rodam
+
+  contadores.forEach((contador) => {
+    const atualizarContador = () => {
+      // Pega o número final que colocamos no HTML (ex: 1200)
+      const alvo = +contador.getAttribute("data-alvo");
+      // Pega o número atual na tela
+      const contagem = +contador.innerText;
+
+      // Calcula de quanto em quanto o número vai subir
+      const incremento = alvo / velocidade;
+
+      if (contagem < alvo) {
+        // Arredonda pra cima e sobe o número
+        contador.innerText = Math.ceil(contagem + incremento);
+        // Chama a função de novo quase instantaneamente (20 milissegundos)
+        setTimeout(atualizarContador, 20);
+      } else {
+        // Adiciona o símbolo de "+" no final do número grandão
+        contador.innerText = alvo + "+";
+      }
+    };
+    atualizarContador();
+  });
+}
+
+// O "Olheiro" que avisa quando a seção aparece na tela
+const sessaoEstatisticas = document.querySelector(".estatisticas");
+let animacaoJaRodou = false; // Garante que a contagem só aconteça uma vez
+
+const observadorScroll = new IntersectionObserver(
+  (entradas) => {
+    // Se a seção entrou na tela e a animação ainda não rodou...
+    if (entradas[0].isIntersecting && !animacaoJaRodou) {
+      animarContadores();
+      animacaoJaRodou = true;
+    }
+  },
+  { threshold: 0.5 },
+); // threshold: 0.5 significa que a animação só dispara quando metade da barra aparecer
+
+if (sessaoEstatisticas) {
+  observadorScroll.observe(sessaoEstatisticas);
+}
 
 // Dá a partida no site assim que o código carrega
 iniciarSite();

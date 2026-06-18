@@ -2,6 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PASCOM - Paróquia Santo Antônio</title>
     <link
@@ -45,7 +46,7 @@
     </header>
 
     <section class="hero container">
-      <div class="hero-text">
+      <div class="hero-text" data-aos="fade-right">
         <span class="tag">PASCOM SANTO ANTÔNIO</span>
         <h1>Registrando a vida da nossa comunidade</h1>
         <p>
@@ -55,7 +56,7 @@
           ><i class="fa-solid fa-camera"></i> VER ÁLBUNS</a
         >
       </div>
-      <div class="hero-image">
+      <div class="hero-image" data-aos="fade-left">
         <img
           src="https://drive.google.com/thumbnail?id=11KVMKaAhchHg3qPsc-EpAtesloRrb4-9&sz=w1200"
           alt="Igreja Matriz Santo Antônio"
@@ -64,31 +65,31 @@
     </section>
 
     <div class="stats-bar container">
-      <div class="stat-item">
-        <i class="fa-regular fa-image"></i>
-        <div>
-          <strong>+1.200</strong>
-          <span>fotos registradas</span>
+      <!-- BARRA DE ESTATÍSTICAS -->
+      <section class="estatisticas">
+        <div class="container stat-container">
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="0">
+            <i class="fa-solid fa-camera"></i>
+            <!-- Note a classe 'contador' e o 'data-alvo' -->
+            <h3 class="stat-number contador" data-alvo="1200">0</h3>
+            <p>Fotos Tiradas</p>
+          </div>
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="150">
+            <i class="fa-solid fa-images"></i>
+            <h3 class="stat-number contador" data-alvo="40">0</h3>
+            <p>Álbuns Publicados</p>
+          </div>
+          <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+            <i class="fa-solid fa-users"></i>
+            <h3 class="stat-number contador" data-alvo="5000">0</h3>
+            <p>Pessoas Alcançadas</p>
+          </div>
         </div>
-      </div>
-      <div class="stat-item">
-        <i class="fa-regular fa-folder"></i>
-        <div>
-          <strong>+40</strong>
-          <span>álbuns publicados</span>
-        </div>
-      </div>
-      <div class="stat-item">
-        <i class="fa-solid fa-users"></i>
-        <div>
-          <strong>Nossas histórias</strong>
-          <span>em imagens</span>
-        </div>
-      </div>
+      </section>
     </div>
 
     <section id="albuns" class="container albuns-section">
-      <div class="albuns-header">
+      <div class="albuns-header" data-aos="fade-up">
         <div>
           <span class="tag">NOSSOS ÁLBUNS</span>
           <h2 id="titulo-sessao">Momentos que ficaram para sempre</h2>
@@ -125,8 +126,8 @@
       ></div>
     </section>
 
-    <!-- <section class="container">
-      <div class="cta-banner">
+    <section class="container">
+      <div class="cta-banner" data-aos="zoom-in">
         <div class="cta-text">
           <div class="cta-icon"><i class="fa-solid fa-camera"></i></div>
           <div>
@@ -138,7 +139,7 @@
           ><i class="fa-solid fa-cloud-arrow-up"></i> ENVIAR FOTOS</a
         >
       </div>
-    </section> -->
+    </section>
 
     <footer>
       <div id="footer" class="container footer-content">
@@ -245,6 +246,7 @@
         </div>
       </div>
     </div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
