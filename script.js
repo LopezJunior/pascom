@@ -53,6 +53,8 @@ async function iniciarSite() {
 
 // 2. Função que abre a galeria de fotos de um álbum específico
 function abrirAlbum(indexDoAlbum) {
+  // Avisa o telemóvel que entramos numa nova "página"
+  history.pushState({ tela: "album_aberto" }, "", "#album");
   const albumEscolhido = dadosDosAlbuns[indexDoAlbum];
   fotosDoAlbumAtual = albumEscolhido.fotos;
 
@@ -296,5 +298,21 @@ if (sessaoEstatisticas) {
   observadorScroll.observe(sessaoEstatisticas);
 }
 
+/* ==========================================================================
+   CONTROLE DO BOTÃO VOLTAR DO CELULAR
+   ========================================================================== */
+window.addEventListener("popstate", function (event) {
+  // Se o utilizador apertar o botão de voltar físico do telemóvel,
+  // chama a função que esconde as fotos e volta para as pastas.
+  if (typeof voltarParaAlbuns === "function") {
+    voltarParaAlbuns();
+  }
+
+  // Bónus: Se a pessoa estiver com uma foto ampliada em ecrã inteiro e apertar voltar,
+  // fecha o ecrã inteiro em vez de fechar o site.
+  if (typeof fecharLightbox === "function") {
+    fecharLightbox();
+  }
+});
 // Dá a partida no site assim que o código carrega
 iniciarSite();

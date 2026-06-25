@@ -810,6 +810,37 @@ footer {
   }
 }
 
+/* Ajuste para a tela do celular (Compactando os números) */
+@media (max-width: 768px) {
+  .estatisticas {
+    padding: 30px 0; /* Reduz o espaço em branco acima e abaixo da seção */
+  }
+
+  .stat-container {
+    flex-direction: column;
+    gap: 15px; /* Reduz a distância entre a câmera, o quadro e os bonequinhos */
+  }
+
+  .stat-item {
+    padding: 5px; /* Remove o excesso de margem interna */
+    min-width: auto;
+  }
+
+  .stat-item i {
+    font-size: 2rem; /* Deixa os ícones amarelos menores */
+    margin-bottom: 5px;
+  }
+
+  .stat-number {
+    font-size: 2.2rem; /* Reduz o tamanho do número gigante */
+  }
+
+  .stat-item p {
+    font-size: 0.85rem; /* Reduz um pouco o texto "FOTOS TIRADAS" */
+    margin-top: 0;
+  }
+}
+
 /* ==========================================================================
    EFEITOS DE HOVER (MOUSE EM CIMA) NOS ÁLBUNS
    ========================================================================== */
@@ -840,4 +871,28 @@ footer {
 /* 4. O segredo: Dá o zoom na foto SÓ quando o mouse passa no card todo */
 .card-album:hover .card-img-wrapper img {
   transform: scale(1.1); /* Dá um zoom de 10% na imagem */
+}
+
+/* ==========================================================================
+   ESTILO DO BOTÃO SECUNDÁRIO (BANNER DE FOTOS)
+   ========================================================================== */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff; /* Fundo branco do botão */
+  color: #c28d47; /* Cor do texto (mesmo tom do fundo do banner) */
+  padding: 15px 30px;
+  border-radius: 8px; /* Cantos arredondados */
+  text-decoration: none; /* Tira o sublinhado roxo/azul */
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #f8f8f8;
+  transform: translateY(-3px); /* Dá um saltinho ao passar o rato */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
