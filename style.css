@@ -809,3 +809,35 @@ footer {
     }
   }
 }
+
+/* ==========================================================================
+   EFEITOS DE HOVER (MOUSE EM CIMA) NOS ÁLBUNS
+   ========================================================================== */
+
+/* 1. Faz o card inteiro flutuar suavemente e aumenta a sombra */
+.card-album {
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card-album:hover {
+  transform: translateY(-8px); /* Levanta o card 8 pixels */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); /* Deixa a sombra mais forte */
+}
+
+/* 2. Prepara a caixa da imagem para não deixar o zoom "vazar" pelas bordas */
+.card-img-wrapper {
+  overflow: hidden;
+}
+
+/* 3. Define o tempo da animação da foto de capa */
+.card-img-wrapper img {
+  transition: transform 0.5s ease;
+}
+
+/* 4. O segredo: Dá o zoom na foto SÓ quando o mouse passa no card todo */
+.card-album:hover .card-img-wrapper img {
+  transform: scale(1.1); /* Dá um zoom de 10% na imagem */
+}

@@ -28,8 +28,9 @@ async function iniciarSite() {
       const urlCapa = `https://drive.google.com/thumbnail?id=${idFotoCapa}&sz=w600`;
 
       // Novo código do card com a animação
+      // O onclick agora fica na div principal do card
       const cardHTML = `
-                <div class="card-album" data-aos="fade-up" data-aos-delay="${index * 100}">
+                <div class="card-album" data-aos="fade-up" data-aos-delay="${index * 100}" onclick="abrirAlbum(${index})">
                     <div class="card-img-wrapper">
                         <span class="badge-fotos"><i class="fa-regular fa-image"></i> ${album.fotos.length}</span>
                         <img src="${urlCapa}" alt="Capa do álbum ${album.titulo}">
@@ -37,7 +38,7 @@ async function iniciarSite() {
                     <div class="card-content">
                         <span class="card-date">ÁLBUM DA COMUNIDADE</span>
                         <h3>${album.titulo}</h3>
-                        <button class="link-album btn-abrir" onclick="abrirAlbum(${index})">VER ÁLBUM <i class="fa-solid fa-arrow-right"></i></button>
+                        <button class="link-album btn-abrir">VER ÁLBUM <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
             `;
