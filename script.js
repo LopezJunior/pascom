@@ -14,23 +14,31 @@ async function iniciarSite() {
     const resposta = await fetch(urlApiGoogle);
     dadosDosAlbuns = await resposta.json();
 
-    containerLista.innerHTML = "";
+    if (containerLista) containerLista.innerHTML = "";
 
     if (dadosDosAlbuns.length === 0) {
-      containerLista.innerHTML =
-        '<p style="text-align:center; width:100%;">Nenhuma foto ou pasta encontrada.</p>';
+      if (containerLista)
+        containerLista.innerHTML =
+          '<p style="text-align:center; width:100%;">Nenhuma foto ou pasta encontrada.</p>';
       return;
     }
 
+    const btnVerMais = document.getElementById("btn-ver-mais");
+    const maxAlbuns = 6;
+
     // Monta os cards dos álbuns
     dadosDosAlbuns.forEach((album, index) => {
-      const idFotoCapa = album.fotos[0].id;
-      const urlCapa = `https://drive.google.com/thumbnail?id=${idFotoCapa}&sz=w600`;
+      // Proteção: Se a pasta estiver vazia, ele ignora e não quebra o site
+      if (!album.fotos || album.fotos.length === 0) return;
 
-      // Novo código do card com a animação
-      // O onclick agora fica na div principal do card
+      // ROTA ATUALIZADA: Usando o servidor lh3 oficial do Google
+      const urlCapa = `https://lh3.googleusercontent.com/d/${album.fotos[0].id}`;
+
+      const classeExtra = index >= maxAlbuns ? "album-escondido" : "";
+      const estiloOculto = index >= maxAlbuns ? 'style="display: none;"' : "";
+
       const cardHTML = `
-                <div class="card-album" data-aos="fade-up" data-aos-delay="${index * 100}" onclick="abrirAlbum(${index})">
+                <div class="card-album ${classeExtra}" ${estiloOculto} data-aos="fade-up" data-aos-delay="100" onclick="abrirAlbum(${index})">
                     <div class="card-img-wrapper">
                         <span class="badge-fotos"><i class="fa-regular fa-image"></i> ${album.fotos.length}</span>
                         <img src="${urlCapa}" alt="Capa do álbum ${album.titulo}">
@@ -42,18 +50,33 @@ async function iniciarSite() {
                     </div>
                 </div>
             `;
-      containerLista.innerHTML += cardHTML;
+
+      if (containerLista) containerLista.innerHTML += cardHTML;
     });
+
+    // Lógica do botão "Ver Todos"
+    if (dadosDosAlbuns.length > maxAlbuns && btnVerMais) {
+      btnVerMais.style.display = "inline-flex";
+
+      btnVerMais.onclick = () => {
+        const albunsOcultos = document.querySelectorAll(".album-escondido");
+        albunsOcultos.forEach((album) => {
+          album.style.display = "block";
+        });
+        btnVerMais.style.display = "none";
+      };
+    }
   } catch (erro) {
     console.error("Deu erro ao buscar as imagens:", erro);
-    containerLista.innerHTML =
-      '<p style="text-align:center; width:100%;">Erro ao conectar com o Google Drive da Pascom.</p>';
+    if (containerLista) {
+      containerLista.innerHTML =
+        '<p style="text-align:center; width:100%;">Erro ao conectar com o Google Drive da Pascom.</p>';
+    }
   }
 }
 
-// 2. Função que abre a galeria de fotos de um álbum específico
+// 2. Função que abre a galeria de fotos
 function abrirAlbum(indexDoAlbum) {
-  // Avisa o telemóvel que entramos numa nova "página"
   history.pushState({ tela: "album_aberto" }, "", "#album");
   const albumEscolhido = dadosDosAlbuns[indexDoAlbum];
   fotosDoAlbumAtual = albumEscolhido.fotos;
@@ -62,56 +85,63 @@ function abrirAlbum(indexDoAlbum) {
   const containerGaleria = document.getElementById("galeria-fotos");
   const btnVoltar = document.getElementById("btn-voltar");
   const tituloSessao = document.getElementById("titulo-sessao");
+  const btnVerMais = document.getElementById("btn-ver-mais");
 
-  containerLista.style.display = "none";
-  containerGaleria.style.display = "grid";
-  btnVoltar.style.display = "inline-block";
+  if (containerLista) containerLista.style.display = "none";
+  if (containerGaleria) containerGaleria.style.display = "grid";
+  if (btnVoltar) btnVoltar.style.display = "inline-block";
+  if (btnVerMais) btnVerMais.style.display = "none";
 
-  tituloSessao.innerText = albumEscolhido.titulo;
-  containerGaleria.innerHTML = "";
+  if (tituloSessao) tituloSessao.innerText = albumEscolhido.titulo;
+  if (containerGaleria) containerGaleria.innerHTML = "";
 
   albumEscolhido.fotos.forEach((foto, indexFoto) => {
-    const urlFoto = `https://drive.google.com/thumbnail?id=${foto.id}&sz=w1000`;
-    containerGaleria.innerHTML += `<img src="${urlFoto}" alt="${foto.nome}" loading="lazy" onclick="abrirLightbox(${indexFoto})">`;
+    // ROTA ATUALIZADA para as fotos da galeria
+    const urlFoto = `https://lh3.googleusercontent.com/d/${foto.id}`;
+    containerGaleria.innerHTML += `<img src="${urlFoto}" alt="Foto da Paróquia" loading="lazy" onclick="abrirLightbox(${indexFoto})">`;
   });
 
   document.getElementById("albuns").scrollIntoView({ behavior: "smooth" });
 }
 
-// 3. Função para voltar para a tela inicial de álbuns
+// 3. Função para voltar para a tela inicial
 function voltarParaAlbuns() {
   const containerLista = document.getElementById("lista-albuns");
   const containerGaleria = document.getElementById("galeria-fotos");
   const btnVoltar = document.getElementById("btn-voltar");
   const tituloSessao = document.getElementById("titulo-sessao");
+  const btnVerMais = document.getElementById("btn-ver-mais");
 
-  containerGaleria.style.display = "none";
-  containerLista.style.display = "grid";
-  btnVoltar.style.display = "none";
+  if (containerGaleria) containerGaleria.style.display = "none";
+  if (containerLista) containerLista.style.display = "grid";
+  if (btnVoltar) btnVoltar.style.display = "none";
 
-  tituloSessao.innerText = "Momentos que ficaram para sempre";
+  const albunsOcultos = document.querySelectorAll(".album-escondido");
+  let temOculto = false;
+  albunsOcultos.forEach((a) => {
+    if (a.style.display === "none") temOculto = true;
+  });
+  if (temOculto && btnVerMais) btnVerMais.style.display = "inline-flex";
+
+  if (tituloSessao) tituloSessao.innerText = "Momentos que ficaram para sempre";
 }
 
 /* ==========================================================================
-   FUNÇÕES DO LIGHTBOX (TELA CHEIA COM PRÉ-CARREGAMENTO)
+   FUNÇÕES DO LIGHTBOX (TELA CHEIA)
    ========================================================================== */
-
-// NOVO: Função para baixar as fotos vizinhas em segundo plano
 function precarregarImagensVizinhas(indexAtual) {
-  // Descobre qual é a próxima foto e a anterior (com a lógica de loop infinito)
   let indexProxima =
     indexAtual + 1 >= fotosDoAlbumAtual.length ? 0 : indexAtual + 1;
   let indexAnterior =
     indexAtual - 1 < 0 ? fotosDoAlbumAtual.length - 1 : indexAtual - 1;
 
-  // Cria elementos de imagem na memória do navegador para forçar o download invisível
   const imgProxima = new Image();
-  const idProxima = fotosDoAlbumAtual[indexProxima].id;
-  imgProxima.src = `https://drive.google.com/thumbnail?id=${idProxima}&sz=w1600`;
+  // ROTA ATUALIZADA
+  imgProxima.src = `https://lh3.googleusercontent.com/d/${fotosDoAlbumAtual[indexProxima].id}`;
 
   const imgAnterior = new Image();
-  const idAnterior = fotosDoAlbumAtual[indexAnterior].id;
-  imgAnterior.src = `https://drive.google.com/thumbnail?id=${idAnterior}&sz=w1600`;
+  // ROTA ATUALIZADA
+  imgAnterior.src = `https://lh3.googleusercontent.com/d/${fotosDoAlbumAtual[indexAnterior].id}`;
 }
 
 function abrirLightbox(index) {
@@ -122,13 +152,11 @@ function abrirLightbox(index) {
 
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
 
-  // Exibe a foto atual
-  lightboxImg.src = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
+  // ROTA ATUALIZADA
+  lightboxImg.src = `https://lh3.googleusercontent.com/d/${idFoto}`;
   btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
 
   lightbox.style.display = "flex";
-
-  // Dispara o download antecipado das vizinhas
   precarregarImagensVizinhas(indiceFotoAtual);
 }
 
@@ -150,15 +178,14 @@ function mudarFoto(direcao) {
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
   const btnDownload = document.getElementById("btn-download");
 
+  // ROTA ATUALIZADA
   document.getElementById("lightbox-img").src =
-    `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
+    `https://lh3.googleusercontent.com/d/${idFoto}`;
   btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
 
-  // Atualiza o pré-carregamento para as novas vizinhas
   precarregarImagensVizinhas(indiceFotoAtual);
 }
 
-// Navegação pelo teclado (Setas e Esc)
 document.addEventListener("keydown", function (event) {
   const lightbox = document.getElementById("lightbox");
   if (lightbox.style.display === "flex") {
@@ -169,55 +196,41 @@ document.addEventListener("keydown", function (event) {
 });
 
 /* ==========================================================================
-   NAVEGAÇÃO POR TOQUE (SWIPE PARA CELULARES)
+   NAVEGAÇÃO POR TOQUE (SWIPE PARA TELEMÓVEIS)
    ========================================================================== */
-
 let touchStartX = 0;
 let touchEndX = 0;
-
 const lightboxElement = document.getElementById("lightbox");
 
-// Registra onde o dedo encostou na tela
-lightboxElement.addEventListener(
-  "touchstart",
-  function (event) {
-    touchStartX = event.changedTouches[0].screenX;
-  },
-  false,
-);
+if (lightboxElement) {
+  lightboxElement.addEventListener(
+    "touchstart",
+    function (event) {
+      touchStartX = event.changedTouches[0].screenX;
+    },
+    false,
+  );
 
-// Registra onde o dedo soltou da tela e chama a função para calcular a direção
-lightboxElement.addEventListener(
-  "touchend",
-  function (event) {
-    touchEndX = event.changedTouches[0].screenX;
-    lidarComSwipe();
-  },
-  false,
-);
+  lightboxElement.addEventListener(
+    "touchend",
+    function (event) {
+      touchEndX = event.changedTouches[0].screenX;
+      lidarComSwipe();
+    },
+    false,
+  );
+}
 
 function lidarComSwipe() {
-  // Define uma distância mínima (em pixels) para considerar como um "arrasto" intencional
-  // Isso evita que um simples toque na tela avance a foto sem querer
   const distanciaMinima = 50;
-
-  // Se o dedo foi para a esquerda (arrastou para a esquerda)
-  if (touchEndX < touchStartX - distanciaMinima) {
-    mudarFoto(1); // Vai para a próxima foto
-  }
-
-  // Se o dedo foi para a direita (arrastou para a direita)
-  if (touchEndX > touchStartX + distanciaMinima) {
-    mudarFoto(-1); // Volta para a foto anterior
-  }
+  if (touchEndX < touchStartX - distanciaMinima) mudarFoto(1);
+  if (touchEndX > touchStartX + distanciaMinima) mudarFoto(-1);
 }
 
 /* ==========================================================================
    MODAL SOBRE NÓS
    ========================================================================== */
-
 function abrirModalSobre(event) {
-  // Evita que a página pule pro topo ao clicar no link com href="#"
   event.preventDefault();
   document.getElementById("modal-sobre").style.display = "flex";
 }
@@ -226,52 +239,42 @@ function fecharModalSobre() {
   document.getElementById("modal-sobre").style.display = "none";
 }
 
-// Fecha o modal se o usuário clicar na área escura (fora da caixa branca)
-document
-  .getElementById("modal-sobre")
-  .addEventListener("click", function (event) {
-    if (event.target === this) {
-      fecharModalSobre();
-    }
+const modalSobre = document.getElementById("modal-sobre");
+if (modalSobre) {
+  modalSobre.addEventListener("click", function (event) {
+    if (event.target === this) fecharModalSobre();
   });
+}
 
 // Inicializa a biblioteca de animações
-AOS.init({
-  duration: 800, // Duração da animação (0.8 segundos)
-  once: true, // Anima apenas uma vez quando a pessoa rola a página
-  offset: 100, // Distância que o elemento precisa aparecer na tela para animar
-});
-
-// Atualiza as animações depois que as fotos carregam do Google Drive
-setTimeout(() => {
-  AOS.refresh();
-}, 2000);
+if (typeof AOS !== "undefined") {
+  AOS.init({
+    duration: 800,
+    once: true,
+    offset: 100,
+  });
+  setTimeout(() => {
+    AOS.refresh();
+  }, 2000);
+}
 
 /* ==========================================================================
    ANIMAÇÃO DO CONTADOR DE ESTATÍSTICAS
    ========================================================================== */
-
 function animarContadores() {
   const contadores = document.querySelectorAll(".contador");
-  const velocidade = 100; // Quanto menor esse número, mais rápido os números rodam
+  const velocidade = 100;
 
   contadores.forEach((contador) => {
     const atualizarContador = () => {
-      // Pega o número final que colocamos no HTML (ex: 1200)
       const alvo = +contador.getAttribute("data-alvo");
-      // Pega o número atual na tela
       const contagem = +contador.innerText;
-
-      // Calcula de quanto em quanto o número vai subir
       const incremento = alvo / velocidade;
 
       if (contagem < alvo) {
-        // Arredonda pra cima e sobe o número
         contador.innerText = Math.ceil(contagem + incremento);
-        // Chama a função de novo quase instantaneamente (20 milissegundos)
         setTimeout(atualizarContador, 20);
       } else {
-        // Adiciona o símbolo de "+" no final do número grandão
         contador.innerText = alvo + "+";
       }
     };
@@ -279,62 +282,45 @@ function animarContadores() {
   });
 }
 
-// O "Olheiro" que avisa quando a seção aparece na tela
 const sessaoEstatisticas = document.querySelector(".estatisticas");
-let animacaoJaRodou = false; // Garante que a contagem só aconteça uma vez
+let animacaoJaRodou = false;
 
-const observadorScroll = new IntersectionObserver(
-  (entradas) => {
-    // Se a seção entrou na tela e a animação ainda não rodou...
-    if (entradas[0].isIntersecting && !animacaoJaRodou) {
-      animarContadores();
-      animacaoJaRodou = true;
-    }
-  },
-  { threshold: 0.5 },
-); // threshold: 0.5 significa que a animação só dispara quando metade da barra aparecer
-
-if (sessaoEstatisticas) {
+if (sessaoEstatisticas && typeof IntersectionObserver !== "undefined") {
+  const observadorScroll = new IntersectionObserver(
+    (entradas) => {
+      if (entradas[0].isIntersecting && !animacaoJaRodou) {
+        animarContadores();
+        animacaoJaRodou = true;
+      }
+    },
+    { threshold: 0.5 },
+  );
   observadorScroll.observe(sessaoEstatisticas);
 }
 
 /* ==========================================================================
-   CONTROLE DO BOTÃO VOLTAR DO CELULAR
+   CONTROLO DO BOTÃO VOLTAR DO TELEMÓVEL
    ========================================================================== */
 window.addEventListener("popstate", function (event) {
-  // Se o utilizador apertar o botão de voltar físico do telemóvel,
-  // chama a função que esconde as fotos e volta para as pastas.
-  if (typeof voltarParaAlbuns === "function") {
-    voltarParaAlbuns();
-  }
-
-  // Bónus: Se a pessoa estiver com uma foto ampliada em ecrã inteiro e apertar voltar,
-  // fecha o ecrã inteiro em vez de fechar o site.
-  if (typeof fecharLightbox === "function") {
-    fecharLightbox();
-  }
+  if (typeof voltarParaAlbuns === "function") voltarParaAlbuns();
+  if (typeof fecharLightbox === "function") fecharLightbox();
 });
 
 /* ==========================================================================
-   CARREGAMENTO AUTOMÁTICO DE VÍDEOS DO YOUTUBE
+   CARREGAMENTO AUTOMÁTICO DE VÍDEOS DO YOUTUBE E LIVE
    ========================================================================== */
 const idDoCanal = "UC69U57tf2N9ULzxQSFiHR1Q";
-// Usamos uma API gratuita (rss2json) para transformar o feed do YouTube em dados fáceis de ler
+const apiKeyYoutube = "AIzaSyB1QCuqtZow18mekFyw_EnAd-Fo92PoWVM";
 const urlYoutubeFeed = `https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?channel_id=${idDoCanal}`;
 
-/* ==========================================================================
-   CARREGAMENTO DE VÍDEOS DO YOUTUBE (COM CARROSSEL)
-   ========================================================================== */
 function carregarVideosYouTube() {
   const gradeVideos = document.getElementById("grade-videos");
   if (!gradeVideos) return;
 
-  fetch(urlYoutubeFeed) // Certifique-se de que a variável urlYoutubeFeed está declarada acima
+  fetch(urlYoutubeFeed)
     .then((response) => response.json())
     .then((dados) => {
       gradeVideos.innerHTML = "";
-
-      // AGORA PUXAMOS OS 10 ÚLTIMOS VÍDEOS!
       const ultimosVideos = dados.items.slice(0, 10);
 
       ultimosVideos.forEach((video) => {
@@ -358,42 +344,8 @@ function carregarVideosYouTube() {
     });
 }
 
-// Inicia os vídeos e liga as setinhas do carrossel
-document.addEventListener("DOMContentLoaded", () => {
-  carregarVideosYouTube();
-
-  const track = document.getElementById("grade-videos");
-  const btnPrev = document.getElementById("btn-prev-video");
-  const btnNext = document.getElementById("btn-next-video");
-
-  if (btnPrev && btnNext && track) {
-    // Ao clicar no botão da direita, ele rola 300px (tamanho do card + gap)
-    btnNext.addEventListener("click", () => {
-      track.scrollBy({ left: 300, behavior: "smooth" });
-    });
-
-    // Ao clicar no botão da esquerda, ele volta 300px
-    btnPrev.addEventListener("click", () => {
-      track.scrollBy({ left: -300, behavior: "smooth" });
-    });
-  }
-});
-// Inicia a função assim que o site carregar
-document.addEventListener("DOMContentLoaded", () => {
-  carregarVideosYouTube();
-});
-
-/* ==========================================================================
-   VERIFICADOR INTELIGENTE DE TRANSMISSÃO AO VIVO
-   ========================================================================== */
 function verificarLive() {
-  // Substitua pelos seus dados
-  const canalID = "UC69U57tf2N9ULzxQSFiHR1Q";
-  const apiKey = "AIzaSyB1QCuqtZow18mekFyw_EnAd-Fo92PoWVM";
-
-  // Rota oficial do YouTube para buscar vídeos ao vivo de um canal específico
-  const urlBuscaLive = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${canalID}&eventType=live&type=video&key=${apiKey}`;
-
+  const urlBuscaLive = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${idDoCanal}&eventType=live&type=video&key=${apiKeyYoutube}`;
   const secaoLive = document.getElementById("secao-live");
   const iframeLive = document.getElementById("iframe-live");
 
@@ -402,18 +354,11 @@ function verificarLive() {
   fetch(urlBuscaLive)
     .then((resposta) => resposta.json())
     .then((dados) => {
-      // Se o YouTube responder que existe um item (vídeo) na lista...
       if (dados.items && dados.items.length > 0) {
-        // Pega o código exato da live que está rolando agora
         const idDaLive = dados.items[0].id.videoId;
-
-        // Injeta o vídeo no iframe
         iframeLive.src = `https://www.youtube.com/embed/${idDaLive}?autoplay=1`;
-
-        // Faz a mágica: Revela a seção inteira no site!
         secaoLive.style.display = "block";
       } else {
-        // Se não tem live, garante que continua invisível
         secaoLive.style.display = "none";
       }
     })
@@ -422,9 +367,23 @@ function verificarLive() {
     });
 }
 
-// Roda a função quando a página termina de carregar
+// O bloco central que arranca com tudo quando o site carrega!
 document.addEventListener("DOMContentLoaded", () => {
+  iniciarSite();
+  carregarVideosYouTube();
   verificarLive();
+
+  const track = document.getElementById("grade-videos");
+  const btnPrev = document.getElementById("btn-prev-video");
+  const btnNext = document.getElementById("btn-next-video");
+
+  if (btnPrev && btnNext && track) {
+    btnNext.addEventListener("click", () => {
+      track.scrollBy({ left: 300, behavior: "smooth" });
+    });
+
+    btnPrev.addEventListener("click", () => {
+      track.scrollBy({ left: -300, behavior: "smooth" });
+    });
+  }
 });
-// Dá a partida no site assim que o código carrega
-iniciarSite();
