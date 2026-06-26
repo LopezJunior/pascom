@@ -314,5 +314,117 @@ window.addEventListener("popstate", function (event) {
     fecharLightbox();
   }
 });
+
+/* ==========================================================================
+   CARREGAMENTO AUTOMÁTICO DE VÍDEOS DO YOUTUBE
+   ========================================================================== */
+const idDoCanal = "UC69U57tf2N9ULzxQSFiHR1Q";
+// Usamos uma API gratuita (rss2json) para transformar o feed do YouTube em dados fáceis de ler
+const urlYoutubeFeed = `https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?channel_id=${idDoCanal}`;
+
+/* ==========================================================================
+   CARREGAMENTO DE VÍDEOS DO YOUTUBE (COM CARROSSEL)
+   ========================================================================== */
+function carregarVideosYouTube() {
+  const gradeVideos = document.getElementById("grade-videos");
+  if (!gradeVideos) return;
+
+  fetch(urlYoutubeFeed) // Certifique-se de que a variável urlYoutubeFeed está declarada acima
+    .then((response) => response.json())
+    .then((dados) => {
+      gradeVideos.innerHTML = "";
+
+      // AGORA PUXAMOS OS 10 ÚLTIMOS VÍDEOS!
+      const ultimosVideos = dados.items.slice(0, 10);
+
+      ultimosVideos.forEach((video) => {
+        const cardVideo = `
+                    <div class="card-video" onclick="window.open('${video.link}', '_blank')">
+                        <div class="thumbnail-wrapper">
+                            <img src="${video.thumbnail}" alt="${video.title}">
+                            <div class="play-overlay"><i class="fa-solid fa-circle-play"></i></div>
+                        </div>
+                        <div class="video-info">
+                            <h3>${video.title}</h3>
+                        </div>
+                    </div>
+                `;
+        gradeVideos.innerHTML += cardVideo;
+      });
+    })
+    .catch((erro) => {
+      console.error("Erro ao puxar vídeos:", erro);
+      gradeVideos.innerHTML = "<p>Erro ao carregar os vídeos recentes.</p>";
+    });
+}
+
+// Inicia os vídeos e liga as setinhas do carrossel
+document.addEventListener("DOMContentLoaded", () => {
+  carregarVideosYouTube();
+
+  const track = document.getElementById("grade-videos");
+  const btnPrev = document.getElementById("btn-prev-video");
+  const btnNext = document.getElementById("btn-next-video");
+
+  if (btnPrev && btnNext && track) {
+    // Ao clicar no botão da direita, ele rola 300px (tamanho do card + gap)
+    btnNext.addEventListener("click", () => {
+      track.scrollBy({ left: 300, behavior: "smooth" });
+    });
+
+    // Ao clicar no botão da esquerda, ele volta 300px
+    btnPrev.addEventListener("click", () => {
+      track.scrollBy({ left: -300, behavior: "smooth" });
+    });
+  }
+});
+// Inicia a função assim que o site carregar
+document.addEventListener("DOMContentLoaded", () => {
+  carregarVideosYouTube();
+});
+
+/* ==========================================================================
+   VERIFICADOR INTELIGENTE DE TRANSMISSÃO AO VIVO
+   ========================================================================== */
+function verificarLive() {
+  // Substitua pelos seus dados
+  const canalID = "UC69U57tf2N9ULzxQSFiHR1Q";
+  const apiKey = "AIzaSyB1QCuqtZow18mekFyw_EnAd-Fo92PoWVM";
+
+  // Rota oficial do YouTube para buscar vídeos ao vivo de um canal específico
+  const urlBuscaLive = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${canalID}&eventType=live&type=video&key=${apiKey}`;
+
+  const secaoLive = document.getElementById("secao-live");
+  const iframeLive = document.getElementById("iframe-live");
+
+  if (!secaoLive || !iframeLive) return;
+
+  fetch(urlBuscaLive)
+    .then((resposta) => resposta.json())
+    .then((dados) => {
+      // Se o YouTube responder que existe um item (vídeo) na lista...
+      if (dados.items && dados.items.length > 0) {
+        // Pega o código exato da live que está rolando agora
+        const idDaLive = dados.items[0].id.videoId;
+
+        // Injeta o vídeo no iframe
+        iframeLive.src = `https://www.youtube.com/embed/${idDaLive}?autoplay=1`;
+
+        // Faz a mágica: Revela a seção inteira no site!
+        secaoLive.style.display = "block";
+      } else {
+        // Se não tem live, garante que continua invisível
+        secaoLive.style.display = "none";
+      }
+    })
+    .catch((erro) => {
+      console.error("Erro ao verificar a live:", erro);
+    });
+}
+
+// Roda a função quando a página termina de carregar
+document.addEventListener("DOMContentLoaded", () => {
+  verificarLive();
+});
 // Dá a partida no site assim que o código carrega
 iniciarSite();
