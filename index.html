@@ -2,20 +2,53 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script>
+      window.va =
+        window.va ||
+        function () {
+          (window.vaq = window.vaq || []).push(arguments);
+        };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="PASCOM - Paróquia Santo Antônio. Registrando a vida da nossa comunidade em Imbituva-PR."
+    />
     <title>PASCOM - Paróquia Santo Antônio</title>
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://drive.google.com/thumbnail?id=1PPT1NgwXRrlOUMFVy7QnPXjSSmwg3-qY&sz=w200"
+    />
+
+    <!-- Pré-carregamento de Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Ícones FontAwesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <!-- Animações AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <!-- Estilos Customizados -->
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+
+  <body id="inicio">
+    <!-- ==========================================
+         CABEÇALHO E NAVEGAÇÃO
+         ========================================== -->
     <header class="navbar container-fluid">
       <div class="logo">
         <img
@@ -23,7 +56,6 @@
           alt="Logo Pascom"
           class="logo-img"
         />
-
         <div class="logo-text-container">
           <span class="logo-title">Pascom</span>
           <span class="logo-subtitle"
@@ -31,20 +63,37 @@
           >
         </div>
       </div>
+
       <nav class="nav-links">
-        <a href="#" class="active">Início</a>
+        <a href="#inicio" class="active">Início</a>
         <a href="#albuns">Álbuns</a>
-        <!-- <a href="#">Galeria</a> -->
         <a href="#" onclick="abrirModalSobre(event)">Sobre nós</a>
         <a href="#footer">Contato</a>
       </nav>
+
       <div class="social-icons">
-        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+        <a
+          href="https://www.instagram.com/paroquiaimbituva/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram da Paróquia"
+        >
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a
+          href="https://www.facebook.com/paroquiaSantoAntonioImbituva?locale=pt_BR"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook da Paróquia"
+        >
+          <i class="fa-brands fa-facebook-f"></i>
+        </a>
       </div>
     </header>
 
+    <!-- ==========================================
+         SEÇÃO HERO (DESTAQUE PRINCIPAL)
+         ========================================== -->
     <section class="hero container">
       <div class="hero-text" data-aos="fade-right">
         <span class="tag">PASCOM SANTO ANTÔNIO</span>
@@ -52,9 +101,9 @@
         <p>
           Fotos que contam histórias de fé, amor e união em nossa caminhada.
         </p>
-        <a href="#albuns" class="btn-primary"
-          ><i class="fa-solid fa-camera"></i> VER ÁLBUNS</a
-        >
+        <a href="#albuns" class="btn-primary">
+          <i class="fa-solid fa-camera"></i> VER ÁLBUNS
+        </a>
       </div>
       <div class="hero-image" data-aos="fade-left">
         <img
@@ -64,13 +113,14 @@
       </div>
     </section>
 
+    <!-- ==========================================
+         BARRA DE ESTATÍSTICAS
+         ========================================== -->
     <div class="stats-bar container">
-      <!-- BARRA DE ESTATÍSTICAS -->
       <section class="estatisticas">
         <div class="container stat-container">
           <div class="stat-item" data-aos="fade-up" data-aos-delay="0">
             <i class="fa-solid fa-camera"></i>
-            <!-- Note a classe 'contador' e o 'data-alvo' -->
             <h3 class="stat-number contador" data-alvo="1200">0</h3>
             <p>Fotos Tiradas</p>
           </div>
@@ -81,13 +131,16 @@
           </div>
           <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
             <i class="fa-solid fa-users"></i>
-            <h3 class="stat-number contador" data-alvo="5000">0</h3>
+            <h3 class="stat-number contador" data-alvo="16000">0</h3>
             <p>Pessoas Alcançadas</p>
           </div>
         </div>
       </section>
     </div>
 
+    <!-- ==========================================
+         SEÇÃO DE ÁLBUNS (GALERIAS DO DRIVE)
+         ========================================== -->
     <section id="albuns" class="container albuns-section">
       <div class="albuns-header" data-aos="fade-up">
         <div>
@@ -104,30 +157,22 @@
         </button>
       </div>
 
+      <!-- Contentor dos cartões dos álbuns -->
       <div class="grid-albuns" id="lista-albuns">
-        <p
-          style="
-            text-align: center;
-            width: 100%;
-            grid-column: 1 / -1;
-            padding: 40px 0;
-            color: #777;
-          "
-        >
+        <p class="loading-msg">
           <i class="fa-solid fa-spinner fa-spin"></i> Carregando álbuns da
           Pascom...
         </p>
       </div>
+
+      <!-- Botão para expandir a lista -->
+      <div class="container-ver-mais">
+        <button id="btn-ver-mais" class="btn-secondary" style="display: none">
+          Ver Todos os Álbuns <i class="fa-solid fa-chevron-down"></i>
+        </button>
       </div>
 
-        <div class="container-ver-mais" style="text-align: center; margin-top: 40px;">
-            <button id="btn-ver-mais" class="btn-secondary" style="display: none;">
-                Ver Todos os Álbuns <i class="fa-solid fa-chevron-down"></i>
-            </button>
-        </div>
-    </div>
-</section>
-
+      <!-- Contentor que recebe as fotos quando um álbum é aberto -->
       <div
         class="grid-fotos-internas"
         id="galeria-fotos"
@@ -135,6 +180,10 @@
       ></div>
     </section>
 
+    <!-- ==========================================
+         SEÇÃO DE VÍDEOS (YOUTUBE)
+         ========================================== -->
+    <!-- Destaque Transmissão Ao Vivo -->
     <section id="secao-live" class="live-section" style="display: none">
       <div class="container">
         <h2 class="titulo-sessao">Acompanhe Ao Vivo</h2>
@@ -152,35 +201,46 @@
               picture-in-picture;
             "
             allowfullscreen
-          >
-          </iframe>
+          ></iframe>
         </div>
       </div>
     </section>
 
+    <!-- Galeria de Últimos Vídeos -->
     <section class="videos-galeria">
       <div class="container">
         <h2 class="titulo-sessao">Últimos Lançamentos</h2>
 
         <div class="carousel-wrapper">
-          <button id="btn-prev-video" class="carousel-btn prev">
+          <button
+            id="btn-prev-video"
+            class="carousel-btn prev"
+            aria-label="Deslizar para a esquerda"
+          >
             <i class="fa-solid fa-chevron-left"></i>
           </button>
 
           <div id="grade-videos" class="carousel-track">
-            <p>
+            <p class="loading-msg">
               <i class="fa-solid fa-spinner fa-spin"></i> Carregando vídeos do
               canal...
             </p>
           </div>
 
-          <button id="btn-next-video" class="carousel-btn next">
+          <button
+            id="btn-next-video"
+            class="carousel-btn next"
+            aria-label="Deslizar para a direita"
+          >
             <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
       </div>
     </section>
 
+    <!-- ==========================================
+         BANNER DE CHAMADA PARA AÇÃO (ENVIAR FOTOS)
+         ========================================== -->
     <section class="container">
       <div class="cta-banner" data-aos="zoom-in">
         <div class="cta-text">
@@ -193,6 +253,7 @@
         <a
           href="https://forms.gle/y9figuVfyUezbRNE8"
           target="_blank"
+          rel="noopener noreferrer"
           class="btn-secondary"
         >
           <i class="fa-solid fa-cloud-arrow-up"></i> ENVIAR FOTOS
@@ -200,16 +261,19 @@
       </div>
     </section>
 
-    <footer>
-      <div id="footer" class="container footer-content">
+    <!-- ==========================================
+         RODAPÉ
+         ========================================== -->
+    <footer id="footer">
+      <div class="container footer-content">
         <div class="footer-logo">
           <div class="logo">
             <img
               src="https://drive.google.com/thumbnail?id=1PPT1NgwXRrlOUMFVy7QnPXjSSmwg3-qY&sz=w200"
               alt="Logo Pascom"
               class="logo-img"
+              loading="lazy"
             />
-
             <div class="logo-text-container">
               <span class="logo-title">Pascom</span>
               <span class="logo-subtitle"
@@ -220,19 +284,26 @@
         </div>
         <div class="footer-links">
           <h4>NAVEGAÇÃO</h4>
-          <a href="#">Início</a>
+          <a href="#inicio">Início</a>
           <a href="#albuns">Álbuns</a>
-          <a href="#">Contato</a>
+          <a href="#footer">Contato</a>
         </div>
         <div class="footer-links">
           <h4>SIGA-NOS</h4>
-          <a href="https://www.instagram.com/paroquiaimbituva/"
-            ><i class="fa-brands fa-instagram"></i> Instagram</a
+          <a
+            href="https://www.instagram.com/paroquiaimbituva/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
+            <i class="fa-brands fa-instagram"></i> Instagram
+          </a>
           <a
             href="https://www.facebook.com/paroquiaSantoAntonioImbituva?locale=pt_BR"
-            ><i class="fa-brands fa-facebook"></i> Facebook</a
+            target="_blank"
+            rel="noopener noreferrer"
           >
+            <i class="fa-brands fa-facebook"></i> Facebook
+          </a>
         </div>
         <div class="footer-contact">
           <h4>CONTATO</h4>
@@ -247,40 +318,71 @@
         </p>
       </div>
     </footer>
-    <!-- LIGHTBOX (Visualizador de Fotos em Tela Cheia) -->
-    <!-- LIGHTBOX (Visualizador de Fotos em Tela Cheia) -->
+
+    <!-- ==========================================
+         COMPONENTES FLUTUANTES (MODAIS E LIGHTBOX)
+         ========================================== -->
+
+    <!-- Lightbox (Tela cheia das fotos) -->
     <div id="lightbox" class="lightbox" style="display: none">
-      <!-- NOVO: Botão de Baixar -->
-      <a id="btn-download" href="#" target="_blank" class="btn-download">
+      <a
+        id="btn-download"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-download"
+        aria-label="Descarregar foto"
+      >
         <i class="fa-solid fa-download"></i>
         <span class="txt-download">Baixar</span>
       </a>
 
-      <span class="fechar-lightbox" onclick="fecharLightbox()"
-        ><i class="fa-solid fa-xmark"></i
-      ></span>
-      <button class="btn-nav btn-prev" onclick="mudarFoto(-1)">
+      <button
+        class="fechar-lightbox"
+        onclick="fecharLightbox()"
+        aria-label="Fechar visualização"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <button
+        class="btn-nav btn-prev"
+        onclick="mudarFoto(-1)"
+        aria-label="Foto anterior"
+      >
         <i class="fa-solid fa-chevron-left"></i>
       </button>
+
       <img id="lightbox-img" src="" alt="Foto Ampliada" />
-      <button class="btn-nav btn-next" onclick="mudarFoto(1)">
+
+      <button
+        class="btn-nav btn-next"
+        onclick="mudarFoto(1)"
+        aria-label="Foto seguinte"
+      >
         <i class="fa-solid fa-chevron-right"></i>
       </button>
     </div>
-    <!-- MODAL SOBRE NÓS -->
+
+    <!-- Modal "Sobre Nós" -->
     <div id="modal-sobre" class="modal-overlay" style="display: none">
       <div class="modal-content">
-        <span class="fechar-modal" onclick="fecharModalSobre()"
-          ><i class="fa-solid fa-xmark"></i
-        ></span>
+        <button
+          class="fechar-modal"
+          onclick="fecharModalSobre()"
+          aria-label="Fechar janela"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
 
         <h2>Sobre a PASCOM</h2>
 
         <div class="modal-body">
           <img
             src="https://drive.google.com/thumbnail?id=1CBkBHre_RpftNJ6OwX36d3a0fjgI6dcM&sz=w800"
-            alt="Coordenação Pascom"
+            alt="Equipe de Coordenação da Pascom"
             class="img-sobre"
+            loading="lazy"
           />
 
           <div class="modal-texto">
@@ -288,14 +390,12 @@
               A Pastoral da Comunicação (PASCOM) da Paróquia Santo Antônio
               nasceu com a missão de ser a ponte entre a Igreja e a comunidade.
             </p>
-
             <p>
               Nosso trabalho vai muito além de tirar fotos. Atuamos em parceria
               nos bastidores coordenando projetos de mídia, cobrindo eventos e
               garantindo que a mensagem de Cristo chegue a todos os lares
               através da tecnologia e da criatividade.
             </p>
-
             <p>
               Se você tem afinidade com fotografia, vídeo, redes sociais ou
               design, venha fazer parte da nossa equipe e ajude a registrar a
@@ -305,6 +405,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
   </body>
