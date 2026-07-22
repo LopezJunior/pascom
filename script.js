@@ -150,7 +150,7 @@ function abrirAlbum(indexDoAlbum) {
 
   albumEscolhido.fotos.forEach((foto, indexFoto) => {
     const urlFoto = `https://drive.google.com/thumbnail?id=${foto.id}&sz=w800`;
-    els.galeria.innerHTML += `<img src="${urlFoto}" alt="Foto da Paróquia" loading="lazy" onclick="abrirLightbox(${indexFoto})">`;
+    els.galeria.innerHTML += `<img src="${urlFoto}" alt="Foto do evento ${albumEscolhido.titulo}" loading="lazy" onclick="abrirLightbox(${indexFoto})">`;
   });
 
   document.getElementById("albuns").scrollIntoView({ behavior: "smooth" });
@@ -511,6 +511,31 @@ document.addEventListener("DOMContentLoaded", () => {
     observadorScroll.observe(sessaoEstatisticas);
   }
 });
+
+/* ==========================================================================
+   BOTÃO VOLTAR AO TOPO
+   ========================================================================== */
+const btnVoltarTopo = document.getElementById("btn-voltar-topo");
+
+if (btnVoltarTopo) {
+  // Fica a "espiar" a rolagem da página
+  window.addEventListener("scroll", () => {
+    // Se descer mais de 300 pixels, mostra o botão
+    if (window.scrollY > 300) {
+      btnVoltarTopo.classList.add("mostrar");
+    } else {
+      btnVoltarTopo.classList.remove("mostrar");
+    }
+  });
+
+  // Quando clica, faz um "scroll" suave até o topo
+  btnVoltarTopo.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+}
 
 // Controlo do botão de Voltar Físico do Telemóvel
 window.addEventListener("popstate", () => {

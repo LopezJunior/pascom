@@ -889,6 +889,50 @@ footer {
 }
 
 /* ==========================================================================
+   BOTÃO VOLTAR AO TOPO
+   ========================================================================== */
+#btn-voltar-topo {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+#btn-voltar-topo.mostrar {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+#btn-voltar-topo:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-5px);
+}
+
+/* Ajuste para não atrapalhar a navegação no telemóvel */
+@media (max-width: 768px) {
+  #btn-voltar-topo {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* ==========================================================================
    11. RESPONSIVIDADE GERAL (CELULARES E TABLETS)
    ========================================================================== */
 @media (max-width: 768px) {
