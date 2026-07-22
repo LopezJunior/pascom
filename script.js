@@ -186,7 +186,7 @@ function obterElementosInterface() {
 }
 
 /* ==========================================================================
-   3. LIGHTBOX (VISUALIZADOR DE TELA CHEIA ANIMADO)
+   3. LIGHTBOX (VISUALIZADOR DE TELA CHEIA ANIMADO E DOWNLOAD DIRECTO)
    ========================================================================== */
 
 function precarregarImagensVizinhas(indexAtual) {
@@ -205,6 +205,54 @@ function atualizarContadorLightbox() {
     contador.innerText = `${indiceFotoAtual + 1} / ${fotosDoAlbumAtual.length}`;
 }
 
+// NOVA FUNÇÃO: Força o telemóvel a descarregar a foto sem abrir o Google Drive
+async function baixarFotoAtual(event) {
+  event.preventDefault(); // Impede o navegador de tentar abrir hiperligações externas
+
+  const btn = event.currentTarget;
+  const icone = btn.querySelector("i");
+  const classeOriginal = icone.className;
+
+  // Altera o ícone para uma "rodinha de loading" para o utilizador perceber que está a transferir
+  icone.className = "fa-solid fa-spinner fa-spin";
+
+  const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
+  const url = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
+
+  try {
+    // 1. Puxa a imagem pura em formato de dados (Blob)
+    const resposta = await fetch(url);
+    const blob = await resposta.blob();
+
+    // 2. Cria um ficheiro temporário na memória do telemóvel/PC
+    const blobUrl = window.URL.createObjectURL(blob);
+    const linkFalso = document.createElement("a");
+    linkFalso.style.display = "none";
+    linkFalso.href = blobUrl;
+    linkFalso.download = `Pascom_Imbituva_${idFoto}.jpg`; // Nome com que o ficheiro vai ser guardado
+
+    // 3. Simula um clique invisível para forçar o download local
+    document.body.appendChild(linkFalso);
+    linkFalso.click();
+
+    // 4. Limpa a memória para não deixar o site pesado
+    document.body.removeChild(linkFalso);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (erro) {
+    console.error(
+      "Erro na transferência forçada. A usar método alternativo...",
+      erro,
+    );
+    // Plano B: Se a internet falhar, abre pelo método normal (o que tinha antes)
+    window.open(
+      `https://docs.google.com/uc?export=download&id=${idFoto}`,
+      "_blank",
+    );
+  } finally {
+    icone.className = classeOriginal; // Devolve o ícone da nuvem com a seta
+  }
+}
+
 function abrirLightbox(index) {
   indiceFotoAtual = index;
   const lightbox = document.getElementById("lightbox");
@@ -213,7 +261,6 @@ function abrirLightbox(index) {
 
   if (!lightbox || !lightboxImg || !btnDownload) return;
 
-  // Remove qualquer classe de animação presa ao abrir
   lightboxImg.classList.remove(
     "img-escondida-esquerda",
     "img-escondida-direita",
@@ -221,7 +268,10 @@ function abrirLightbox(index) {
 
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
   lightboxImg.src = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
-  btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
+
+  // LIGA O NOSSO BOTÃO DE DOWNLOAD À NOVA FUNÇÃO MÁGICA
+  btnDownload.href = "#";
+  btnDownload.onclick = baixarFotoAtual;
 
   atualizarContadorLightbox();
   lightbox.style.display = "flex";
@@ -229,22 +279,21 @@ function abrirLightbox(index) {
 }
 
 function fecharLightbox() {
-  animando = false; // Reseta o cadeado
+  animando = false;
   const lightbox = document.getElementById("lightbox");
   if (lightbox) lightbox.style.display = "none";
   const img = document.getElementById("lightbox-img");
-  if (img) img.src = ""; // Limpa a memória
+  if (img) img.src = "";
 }
 
-let animando = false; // "Cadeado" de segurança
+let animando = false;
 
 function mudarFoto(direcao) {
-  if (animando) return; // Se já está no meio de uma troca, ignora o clique
+  if (animando) return;
   animando = true;
 
   const img = document.getElementById("lightbox-img");
 
-  // Calcula qual será a próxima foto
   let novoIndice = indiceFotoAtual + direcao;
   if (novoIndice >= fotosDoAlbumAtual.length) novoIndice = 0;
   else if (novoIndice < 0) novoIndice = fotosDoAlbumAtual.length - 1;
@@ -252,54 +301,43 @@ function mudarFoto(direcao) {
   const idFoto = fotosDoAlbumAtual[novoIndice].id;
   const novaUrl = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
 
-  // 1. A foto atual desliza para fora da tela
   if (direcao > 0) img.classList.add("img-escondida-esquerda");
   else img.classList.add("img-escondida-direita");
 
-  // 2. Cria uma "Promessa" de que a foto nova será baixada na memória
   const promessaImagem = new Promise((resolve) => {
     const tempImg = new Image();
     tempImg.onload = resolve;
-    tempImg.onerror = resolve; // Continua mesmo se a internet oscilar
+    tempImg.onerror = resolve;
     tempImg.src = novaUrl;
   });
 
-  // 3. Cria uma "Promessa" de que a animação de saída (250ms) vai terminar
   const promessaAnimacao = new Promise((resolve) => setTimeout(resolve, 250));
 
-  // 4. Quando a foto baixar E a animação terminar, fazemos a troca mágica!
   Promise.all([promessaImagem, promessaAnimacao]).then(() => {
     indiceFotoAtual = novoIndice;
 
-    // Joga a tag da imagem para o lado oposto sem ninguém ver
     img.classList.remove("img-escondida-esquerda", "img-escondida-direita");
     img.classList.add(
       direcao > 0 ? "img-escondida-direita" : "img-escondida-esquerda",
     );
 
-    // Troca a imagem real
     img.src = novaUrl;
-    document.getElementById("btn-download").href =
-      `https://docs.google.com/uc?export=download&id=${idFoto}`;
 
     if (typeof atualizarContadorLightbox === "function")
       atualizarContadorLightbox();
     if (typeof precarregarImagensVizinhas === "function")
       precarregarImagensVizinhas(indiceFotoAtual);
 
-    // Força o navegador a recalcular a posição ("Reflow")
     void img.offsetWidth;
 
-    // Desliza a foto nova suavemente para o centro
     img.classList.remove("img-escondida-esquerda", "img-escondida-direita");
 
-    // Abre o cadeado para o próximo clique após a animação terminar
     setTimeout(() => {
       animando = false;
     }, 300);
   });
 }
-// Swipe para Telemóveis
+
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -317,7 +355,6 @@ function configurarSwipe() {
     (e) => {
       touchEndX = e.changedTouches[0].screenX;
       const distanciaMinima = 50;
-      // Chama a nossa nova função de mudar foto, com a animação inteira!
       if (touchEndX < touchStartX - distanciaMinima) mudarFoto(1);
       if (touchEndX > touchStartX + distanciaMinima) mudarFoto(-1);
     },
