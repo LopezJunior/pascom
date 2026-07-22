@@ -206,50 +206,47 @@ function atualizarContadorLightbox() {
 }
 
 // NOVA FUNÇÃO: Força o telemóvel a descarregar a foto sem abrir o Google Drive
+// NOVA FUNÇÃO: Tenta baixar silenciosamente. Se falhar, engana o app do Drive!
 async function baixarFotoAtual(event) {
-  event.preventDefault(); // Impede o navegador de tentar abrir hiperligações externas
+  event.preventDefault();
 
   const btn = event.currentTarget;
   const icone = btn.querySelector("i");
   const classeOriginal = icone.className;
 
-  // Altera o ícone para uma "rodinha de loading" para o utilizador perceber que está a transferir
   icone.className = "fa-solid fa-spinner fa-spin";
 
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
-  const url = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
+
+  // Usamos a rota de armazenamento pura (O Android não a intercepta para o Drive)
+  const urlPura = `https://lh3.googleusercontent.com/d/${idFoto}`;
 
   try {
-    // 1. Puxa a imagem pura em formato de dados (Blob)
-    const resposta = await fetch(url);
+    const resposta = await fetch(urlPura);
     const blob = await resposta.blob();
 
-    // 2. Cria um ficheiro temporário na memória do telemóvel/PC
     const blobUrl = window.URL.createObjectURL(blob);
     const linkFalso = document.createElement("a");
     linkFalso.style.display = "none";
     linkFalso.href = blobUrl;
-    linkFalso.download = `Pascom_Imbituva_${idFoto}.jpg`; // Nome com que o ficheiro vai ser guardado
+    linkFalso.download = `Pascom_Imbituva_${idFoto}.jpg`;
 
-    // 3. Simula um clique invisível para forçar o download local
     document.body.appendChild(linkFalso);
     linkFalso.click();
 
-    // 4. Limpa a memória para não deixar o site pesado
     document.body.removeChild(linkFalso);
     window.URL.revokeObjectURL(blobUrl);
   } catch (erro) {
-    console.error(
-      "Erro na transferência forçada. A usar método alternativo...",
-      erro,
+    console.warn(
+      "Bloqueio CORS do navegador. A ativar o Plano B à prova de falhas...",
     );
-    // Plano B: Se a internet falhar, abre pelo método normal (o que tinha antes)
-    window.open(
-      `https://docs.google.com/uc?export=download&id=${idFoto}`,
-      "_blank",
-    );
+
+    // PLANO B: Se o navegador bloquear o ficheiro, abre a foto puramente numa nova aba.
+    // Como o link é "lh3", o aplicativo do Drive não vai sequestrar a tela!
+    // O utilizador só precisa de manter o dedo sobre a foto e "Guardar Imagem".
+    window.open(urlPura, "_blank");
   } finally {
-    icone.className = classeOriginal; // Devolve o ícone da nuvem com a seta
+    icone.className = classeOriginal;
   }
 }
 
