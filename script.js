@@ -14,7 +14,7 @@ let fotosDoAlbumAtual = [];
 let indiceFotoAtual = 0;
 
 /* ==========================================================================
-   2. INTEGRAÇÃO COM GOOGLE DRIVE (ÁLBUNS E FOTOS)
+   2. INTEGRAÇÃO COM GOOGLE DRIVE E FILTROS DE ÁLBUNS
    ========================================================================== */
 
 // Busca as pastas no Google Drive ao abrir o site
@@ -25,7 +25,7 @@ async function iniciarSite() {
   try {
     const resposta = await fetch(urlApiGoogle);
     dadosDosAlbuns = await resposta.json();
-    containerLista.innerHTML = ""; // Limpa o "Carregando..."
+    containerLista.innerHTML = "";
 
     if (!dadosDosAlbuns || dadosDosAlbuns.length === 0) {
       containerLista.innerHTML =
@@ -33,46 +33,12 @@ async function iniciarSite() {
       return;
     }
 
-    const btnVerMais = document.getElementById("btn-ver-mais");
-    const maxAlbuns = 6;
+    // O TRUQUE MÁGICO: Guardamos a posição original de cada álbum.
+    // Isso impede o bug de abrir o álbum errado quando a lista está filtrada!
+    dadosDosAlbuns.forEach((album, i) => (album.indexOriginal = i));
 
-    // Monta os cartões dos álbuns
-    dadosDosAlbuns.forEach((album, index) => {
-      // Proteção: ignora pastas vazias
-      if (!album.fotos || album.fotos.length === 0) return;
-
-      // Rota oficial de miniaturas (rápida e à prova de bloqueios)
-      const urlCapa = `https://drive.google.com/thumbnail?id=${album.fotos[0].id}&sz=w800`;
-
-      const classeExtra = index >= maxAlbuns ? "album-escondido" : "";
-      const estiloOculto = index >= maxAlbuns ? 'style="display: none;"' : "";
-
-      const cardHTML = `
-                <div class="card-album ${classeExtra}" ${estiloOculto} data-aos="fade-up" onclick="abrirAlbum(${index})">
-                    <div class="card-img-wrapper">
-                        <span class="badge-fotos"><i class="fa-regular fa-image"></i> ${album.fotos.length}</span>
-                        <img src="${urlCapa}" alt="Capa do álbum ${album.titulo}" loading="lazy">
-                    </div>
-                    <div class="card-content">
-                        <span class="card-date">ÁLBUM DA COMUNIDADE</span>
-                        <h3>${album.titulo}</h3>
-                        <button class="link-album btn-abrir">VER ÁLBUM <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-                </div>
-            `;
-      containerLista.innerHTML += cardHTML;
-    });
-
-    // Lógica do botão "Ver Todos"
-    if (dadosDosAlbuns.length > maxAlbuns && btnVerMais) {
-      btnVerMais.style.display = "inline-flex";
-      btnVerMais.onclick = () => {
-        document
-          .querySelectorAll(".album-escondido")
-          .forEach((album) => (album.style.display = "block"));
-        btnVerMais.style.display = "none";
-      };
-    }
+    // Renderiza os álbuns exibindo todos por padrão
+    renderizarAlbuns("todos");
   } catch (erro) {
     console.error("Erro ao buscar as imagens:", erro);
     containerLista.innerHTML =
@@ -80,9 +46,90 @@ async function iniciarSite() {
   }
 }
 
+// Renderiza os cartões com base no botão que o usuário clicou
+function renderizarAlbuns(filtro) {
+  const containerLista = document.getElementById("lista-albuns");
+  const btnVerMais = document.getElementById("btn-ver-mais");
+  containerLista.innerHTML = "";
+
+  let albunsFiltrados = [];
+
+  // Lógica inteligente de filtro baseada no texto do título do Drive
+  if (filtro === "trezenas") {
+    albunsFiltrados = dadosDosAlbuns.filter((a) =>
+      a.titulo.toLowerCase().includes("trezena"),
+    );
+  } else if (filtro === "outros") {
+    albunsFiltrados = dadosDosAlbuns.filter(
+      (a) => !a.titulo.toLowerCase().includes("trezena"),
+    );
+  } else {
+    albunsFiltrados = [...dadosDosAlbuns];
+  }
+
+  if (albunsFiltrados.length === 0) {
+    containerLista.innerHTML =
+      '<p style="text-align:center; width:100%; grid-column: 1/-1;">Nenhum álbum encontrado para esta categoria.</p>';
+    if (btnVerMais) btnVerMais.style.display = "none";
+    return;
+  }
+
+  const maxAlbuns = 6;
+
+  albunsFiltrados.forEach((album, indexExibicao) => {
+    if (!album.fotos || album.fotos.length === 0) return;
+
+    const urlCapa = `https://drive.google.com/thumbnail?id=${album.fotos[0].id}&sz=w800`;
+    const classeExtra = indexExibicao >= maxAlbuns ? "album-escondido" : "";
+    const estiloOculto =
+      indexExibicao >= maxAlbuns ? 'style="display: none;"' : "";
+
+    // Atenção: O onclick chama o indexOriginal que salvamos lá em cima!
+    const cardHTML = `
+            <div class="card-album ${classeExtra}" ${estiloOculto} data-aos="fade-up" onclick="abrirAlbum(${album.indexOriginal})">
+                <div class="card-img-wrapper">
+                    <span class="badge-fotos"><i class="fa-regular fa-image"></i> ${album.fotos.length}</span>
+                    <img src="${urlCapa}" alt="Capa do álbum ${album.titulo}" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <span class="card-date">ÁLBUM DA COMUNIDADE</span>
+                    <h3>${album.titulo}</h3>
+                    <button class="link-album btn-abrir">VER ÁLBUM <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        `;
+    containerLista.innerHTML += cardHTML;
+  });
+
+  // Controla a aparição do botão Ver Mais para a lista recém filtrada
+  if (albunsFiltrados.length > maxAlbuns && btnVerMais) {
+    btnVerMais.style.display = "inline-flex";
+    btnVerMais.onclick = () => {
+      document
+        .querySelectorAll(".album-escondido")
+        .forEach((album) => (album.style.display = "block"));
+      btnVerMais.style.display = "none";
+    };
+  } else if (btnVerMais) {
+    btnVerMais.style.display = "none";
+  }
+}
+
+// Disparada quando clica nos botões de filtro
+window.filtrarAlbuns = function (filtro, botaoClicado) {
+  // Tira a cor dourada de todos os botões e coloca só no que foi clicado
+  document
+    .querySelectorAll(".btn-filtro")
+    .forEach((btn) => btn.classList.remove("ativo"));
+  botaoClicado.classList.add("ativo");
+
+  // Manda desenhar a tela novamente
+  renderizarAlbuns(filtro);
+};
+
 // Abre a galeria de fotos de um álbum específico
 function abrirAlbum(indexDoAlbum) {
-  history.pushState({ tela: "album_aberto" }, "", "#album"); // Regista no histórico do telemóvel
+  history.pushState({ tela: "album_aberto" }, "", "#album");
   const albumEscolhido = dadosDosAlbuns[indexDoAlbum];
   fotosDoAlbumAtual = albumEscolhido.fotos;
 
@@ -90,14 +137,17 @@ function abrirAlbum(indexDoAlbum) {
   if (!els.lista || !els.galeria) return;
 
   els.lista.style.display = "none";
-  els.galeria.style.display = "grid";
+
+  // A CORREÇÃO ESTÁ NESTA LINHA AQUI ↓
+  els.galeria.style.display = "block"; // Mudou de "grid" para "block"
+
   if (els.btnVoltar) els.btnVoltar.style.display = "inline-block";
   if (els.btnVerMais) els.btnVerMais.style.display = "none";
+  if (els.filtros) els.filtros.style.display = "none";
   if (els.titulo) els.titulo.innerText = albumEscolhido.titulo;
 
   els.galeria.innerHTML = "";
 
-  // Injeta as fotos com carregamento preguiçoso (lazy)
   albumEscolhido.fotos.forEach((foto, indexFoto) => {
     const urlFoto = `https://drive.google.com/thumbnail?id=${foto.id}&sz=w800`;
     els.galeria.innerHTML += `<img src="${urlFoto}" alt="Foto da Paróquia" loading="lazy" onclick="abrirLightbox(${indexFoto})">`;
@@ -114,16 +164,16 @@ function voltarParaAlbuns() {
   els.galeria.style.display = "none";
   els.lista.style.display = "grid";
   if (els.btnVoltar) els.btnVoltar.style.display = "none";
+  if (els.filtros) els.filtros.style.display = "flex"; // Devolve os botões de filtro
   if (els.titulo) els.titulo.innerText = "Momentos que ficaram para sempre";
 
-  // Restaura o botão "Ver Mais" se ainda houver álbuns escondidos
   const temOculto = Array.from(
     document.querySelectorAll(".album-escondido"),
   ).some((a) => a.style.display === "none");
   if (temOculto && els.btnVerMais) els.btnVerMais.style.display = "inline-flex";
 }
 
-// Função auxiliar para evitar repetição de buscas no DOM
+// Função auxiliar para mapear o HTML
 function obterElementosInterface() {
   return {
     lista: document.getElementById("lista-albuns"),
@@ -131,11 +181,12 @@ function obterElementosInterface() {
     btnVoltar: document.getElementById("btn-voltar"),
     btnVerMais: document.getElementById("btn-ver-mais"),
     titulo: document.getElementById("titulo-sessao"),
+    filtros: document.getElementById("filtros-albuns"),
   };
 }
 
 /* ==========================================================================
-   3. LIGHTBOX (VISUALIZADOR DE TELA CHEIA)
+   3. LIGHTBOX (VISUALIZADOR DE TELA CHEIA ANIMADO)
    ========================================================================== */
 
 function precarregarImagensVizinhas(indexAtual) {
@@ -148,42 +199,106 @@ function precarregarImagensVizinhas(indexAtual) {
   new Image().src = `https://drive.google.com/thumbnail?id=${fotosDoAlbumAtual[ant].id}&sz=w1600`;
 }
 
+function atualizarContadorLightbox() {
+  const contador = document.getElementById("lightbox-counter");
+  if (contador)
+    contador.innerText = `${indiceFotoAtual + 1} / ${fotosDoAlbumAtual.length}`;
+}
+
 function abrirLightbox(index) {
   indiceFotoAtual = index;
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightbox-img");
   const btnDownload = document.getElementById("btn-download");
+
   if (!lightbox || !lightboxImg || !btnDownload) return;
+
+  // Remove qualquer classe de animação presa ao abrir
+  lightboxImg.classList.remove(
+    "img-escondida-esquerda",
+    "img-escondida-direita",
+  );
 
   const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
   lightboxImg.src = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
   btnDownload.href = `https://docs.google.com/uc?export=download&id=${idFoto}`;
 
+  atualizarContadorLightbox();
   lightbox.style.display = "flex";
   precarregarImagensVizinhas(indiceFotoAtual);
 }
 
 function fecharLightbox() {
+  animando = false; // Reseta o cadeado
   const lightbox = document.getElementById("lightbox");
   if (lightbox) lightbox.style.display = "none";
   const img = document.getElementById("lightbox-img");
-  if (img) img.src = "";
+  if (img) img.src = ""; // Limpa a memória
 }
+
+let animando = false; // "Cadeado" de segurança
 
 function mudarFoto(direcao) {
-  indiceFotoAtual += direcao;
-  if (indiceFotoAtual >= fotosDoAlbumAtual.length) indiceFotoAtual = 0;
-  else if (indiceFotoAtual < 0) indiceFotoAtual = fotosDoAlbumAtual.length - 1;
+  if (animando) return; // Se já está no meio de uma troca, ignora o clique
+  animando = true;
 
-  const idFoto = fotosDoAlbumAtual[indiceFotoAtual].id;
-  document.getElementById("lightbox-img").src =
-    `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
-  document.getElementById("btn-download").href =
-    `https://docs.google.com/uc?export=download&id=${idFoto}`;
+  const img = document.getElementById("lightbox-img");
 
-  precarregarImagensVizinhas(indiceFotoAtual);
+  // Calcula qual será a próxima foto
+  let novoIndice = indiceFotoAtual + direcao;
+  if (novoIndice >= fotosDoAlbumAtual.length) novoIndice = 0;
+  else if (novoIndice < 0) novoIndice = fotosDoAlbumAtual.length - 1;
+
+  const idFoto = fotosDoAlbumAtual[novoIndice].id;
+  const novaUrl = `https://drive.google.com/thumbnail?id=${idFoto}&sz=w1600`;
+
+  // 1. A foto atual desliza para fora da tela
+  if (direcao > 0) img.classList.add("img-escondida-esquerda");
+  else img.classList.add("img-escondida-direita");
+
+  // 2. Cria uma "Promessa" de que a foto nova será baixada na memória
+  const promessaImagem = new Promise((resolve) => {
+    const tempImg = new Image();
+    tempImg.onload = resolve;
+    tempImg.onerror = resolve; // Continua mesmo se a internet oscilar
+    tempImg.src = novaUrl;
+  });
+
+  // 3. Cria uma "Promessa" de que a animação de saída (250ms) vai terminar
+  const promessaAnimacao = new Promise((resolve) => setTimeout(resolve, 250));
+
+  // 4. Quando a foto baixar E a animação terminar, fazemos a troca mágica!
+  Promise.all([promessaImagem, promessaAnimacao]).then(() => {
+    indiceFotoAtual = novoIndice;
+
+    // Joga a tag da imagem para o lado oposto sem ninguém ver
+    img.classList.remove("img-escondida-esquerda", "img-escondida-direita");
+    img.classList.add(
+      direcao > 0 ? "img-escondida-direita" : "img-escondida-esquerda",
+    );
+
+    // Troca a imagem real
+    img.src = novaUrl;
+    document.getElementById("btn-download").href =
+      `https://docs.google.com/uc?export=download&id=${idFoto}`;
+
+    if (typeof atualizarContadorLightbox === "function")
+      atualizarContadorLightbox();
+    if (typeof precarregarImagensVizinhas === "function")
+      precarregarImagensVizinhas(indiceFotoAtual);
+
+    // Força o navegador a recalcular a posição ("Reflow")
+    void img.offsetWidth;
+
+    // Desliza a foto nova suavemente para o centro
+    img.classList.remove("img-escondida-esquerda", "img-escondida-direita");
+
+    // Abre o cadeado para o próximo clique após a animação terminar
+    setTimeout(() => {
+      animando = false;
+    }, 300);
+  });
 }
-
 // Swipe para Telemóveis
 let touchStartX = 0;
 let touchEndX = 0;
@@ -202,6 +317,7 @@ function configurarSwipe() {
     (e) => {
       touchEndX = e.changedTouches[0].screenX;
       const distanciaMinima = 50;
+      // Chama a nossa nova função de mudar foto, com a animação inteira!
       if (touchEndX < touchStartX - distanciaMinima) mudarFoto(1);
       if (touchEndX > touchStartX + distanciaMinima) mudarFoto(-1);
     },

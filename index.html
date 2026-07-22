@@ -4,6 +4,7 @@
     <!-- Google tag (gtag.js) -->
 
     <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-Z8S39WXHFW"
@@ -166,6 +167,18 @@
         </button>
       </div>
 
+      <!-- NOVO SISTEMA DE FILTROS -->
+      <div class="filtros-albuns" id="filtros-albuns" data-aos="fade-up">
+        <button class="btn-filtro ativo" onclick="filtrarAlbuns('todos', this)">
+          Todos os Álbuns
+        </button>
+        <button class="btn-filtro" onclick="filtrarAlbuns('trezenas', this)">
+          Trezenas de Santo Antônio
+        </button>
+        <button class="btn-filtro" onclick="filtrarAlbuns('outros', this)">
+          Eventos e Comunidade
+        </button>
+      </div>
       <!-- Contentor dos cartões dos álbuns -->
       <div class="grid-albuns" id="lista-albuns">
         <p class="loading-msg">
@@ -216,7 +229,7 @@
     </section>
 
     <!-- Galeria de Últimos Vídeos -->
-    <section class="videos-galeria">
+    <!-- <section class="videos-galeria">
       <div class="container">
         <h2 class="titulo-sessao">Últimos Lançamentos</h2>
 
@@ -245,7 +258,7 @@
           </button>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- ==========================================
          BANNER DE CHAMADA PARA AÇÃO (ENVIAR FOTOS)
@@ -329,31 +342,35 @@
     </footer>
 
     <!-- ==========================================
-         COMPONENTES FLUTUANTES (MODAIS E LIGHTBOX)
+         LIGHTBOX (Visualizador de Fotos Imersivo)
          ========================================== -->
-
-    <!-- Lightbox (Tela cheia das fotos) -->
     <div id="lightbox" class="lightbox" style="display: none">
-      <a
-        id="btn-download"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-download"
-        aria-label="Descarregar foto"
-      >
-        <i class="fa-solid fa-download"></i>
-        <span class="txt-download">Baixar</span>
-      </a>
+      <!-- Barra de ferramentas superior -->
+      <div class="lightbox-top-bar">
+        <span id="lightbox-counter">1 / 10</span>
+        <div class="lightbox-actions">
+          <a
+            id="btn-download"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-download"
+            aria-label="Baixar foto"
+          >
+            <i class="fa-solid fa-download"></i>
+            <span class="txt-download">Baixar</span>
+          </a>
+          <button
+            class="fechar-lightbox"
+            onclick="fecharLightbox()"
+            aria-label="Fechar visualização"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
 
-      <button
-        class="fechar-lightbox"
-        onclick="fecharLightbox()"
-        aria-label="Fechar visualização"
-      >
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
+      <!-- Navegação Lateral -->
       <button
         class="btn-nav btn-prev"
         onclick="mudarFoto(-1)"
@@ -362,7 +379,10 @@
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
-      <img id="lightbox-img" src="" alt="Foto Ampliada" />
+      <!-- Onde a mágica da foto acontece -->
+      <div class="lightbox-img-wrapper">
+        <img id="lightbox-img" src="" alt="Foto Ampliada" />
+      </div>
 
       <button
         class="btn-nav btn-next"
